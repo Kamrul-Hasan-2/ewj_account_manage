@@ -50,7 +50,7 @@ class FirebaseTestScreen extends StatelessWidget {
             FirebaseFirestore firestore = FirebaseFirestore.instance;
 
             await firestore.collection('products').add({
-              'name': "Pant",
+              'name': 'pant',
               'price': 200,
               'quantity': Random().nextInt(5),
             });

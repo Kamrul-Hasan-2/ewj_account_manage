@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ewj_account_manage/models/product_model.dart';
 import 'package:ewj_account_manage/screens/firebase_test_screen.dart';
 import 'package:flutter/foundation.dart';
@@ -17,11 +20,17 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController priceController = TextEditingController();
 
-  void addProduct() {
+  void addProduct() async {
     String name = nameController.text;
     int price = int.tryParse(priceController.text) ?? 0;
 
     if (name.isNotEmpty && price > 0) {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      await firestore.collection('products').add({
+        'name': name,
+        'price': price,
+        'quantity': productCount,
+      });
       setState(() {
         products.add(Product(name, price, productCount));
         nameController.clear();
@@ -146,19 +155,41 @@ class _HomeScreenState extends State<HomeScreen> {
                       EdgeInsets.symmetric(vertical: 15.0, horizontal: 40.0)),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: products.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(
-                      'Product: ${products[index].name}'
-                      '(${products[index].quantity})',
-                    ),
-                    subtitle: Text('Price: \$${products[index].price}'),
-                  );
-                },
-              ),
-            ),
+                child: StreamBuilder<QuerySnapshot>(
+              stream:
+                  FirebaseFirestore.instance.collection('products').snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return CircularProgressIndicator();
+                }
+                final products = snapshot.data?.docs ?? [];
+
+                return ListView.builder(
+                  itemCount: products.length,
+                  itemBuilder: (context, index) {
+                    final product =
+                        products[index].data() as Map<String, dynamic>;
+                    return Card(
+                        child: Column(
+                      children: [
+                        Text(
+                          "Name: ${product['name']}",
+                          style: TextStyle(fontSize: 20.0),
+                        ),
+                        Text(
+                          "Price: ${product['price']}",
+                          style: TextStyle(fontSize: 20.0),
+                        ),
+                        Text(
+                          "Quantity: ${product['quantity']}",
+                          style: TextStyle(fontSize: 20.0),
+                        ),
+                      ],
+                    ));
+                  },
+                );
+              },
+            )),
           ],
         ),
       ),
