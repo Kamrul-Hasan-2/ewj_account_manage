@@ -8,6 +8,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int productCount = 0;
+  int totalSaleCount = 0;
+  int totalSaleAmount = 0;
   List<Product> products = [];
 
   TextEditingController nameController = TextEditingController();
@@ -19,10 +21,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (name.isNotEmpty && price > 0) {
       setState(() {
-        products.add(Product(name, price));
+        products.add(Product(name, price, productCount));
         nameController.clear();
         priceController.clear();
-        productCount++;
+        totalSaleCount += productCount;
+        totalSaleAmount += price;
+        productCount = 1;
       });
     }
   }
@@ -38,6 +42,35 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SizedBox(
+              width: double.infinity,
+              child: Card(
+                color: Colors.blue,
+                margin: const EdgeInsets.all(0.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Total Sale: $totalSaleCount",
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        "$totalSaleAmount.00৳",
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
             TextField(
               controller: nameController,
               decoration: InputDecoration(labelText: 'Product Name'),
@@ -94,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ElevatedButton(
               onPressed: addProduct,
-              child: Text('Save Sale'),
+              child: Text('Add Sale'),
               style: ElevatedButton.styleFrom(
                   padding:
                       EdgeInsets.symmetric(vertical: 15.0, horizontal: 40.0)),
@@ -105,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemBuilder: (context, index) {
                   return ListTile(
                     title: Text(
-                      'Product: ${products[index].name}' '($productCount)',
+                      'Product: ${products[index].name}' '(${products[index].quantity})',
                     ),
                     subtitle: Text('Price: \$${products[index].price}'),
                   );
