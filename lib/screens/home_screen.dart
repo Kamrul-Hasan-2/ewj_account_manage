@@ -1,4 +1,6 @@
 import 'package:ewj_account_manage/models/product_model.dart';
+import 'package:ewj_account_manage/screens/firebase_test_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -36,6 +38,17 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('EWJ Account Manager'),
+        actions: [
+          if (kDebugMode)
+            IconButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const FirebaseTestScreen()));
+                },
+                icon: Icon(Icons.account_balance_outlined))
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -138,7 +151,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemBuilder: (context, index) {
                   return ListTile(
                     title: Text(
-                      'Product: ${products[index].name}' '(${products[index].quantity})',
+                      'Product: ${products[index].name}'
+                      '(${products[index].quantity})',
                     ),
                     subtitle: Text('Price: \$${products[index].price}'),
                   );

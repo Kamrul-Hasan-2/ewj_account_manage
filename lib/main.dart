@@ -20,7 +20,7 @@ class EasyWearJunctionApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.teal,
       ),
-      home: FirebaseTestScreen(),
+      home: HomeScreen(),
     );
   }
 }
