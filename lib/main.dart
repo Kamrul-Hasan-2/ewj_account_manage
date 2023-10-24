@@ -82,7 +82,7 @@ class _ProductAddScreenState extends State<ProductAddScreen> {
                 itemCount: products.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text('Product: ${products[index].name}'),
+                    title: Text('Product: ${products[index].name}''($productCount)',),
                     subtitle: Text('Price: \$${products[index].price}'),
                   );
                 },
