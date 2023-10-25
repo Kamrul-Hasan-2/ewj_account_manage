@@ -38,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
         'price': price,
         'quantity': productCount,
         'createdAt': FieldValue.serverTimestamp(),
+        'seller' : widget.name,
       });
 
       // firebase er total sale ta update koro

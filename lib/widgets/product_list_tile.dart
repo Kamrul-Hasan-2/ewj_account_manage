@@ -3,12 +3,15 @@ import 'package:intl/intl.dart';
 
 class ProductListTile extends StatelessWidget {
   final Map<String, dynamic> product;
+
   const ProductListTile({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
-
     // Assuming `product['createdAt']` is a DateTime object
+    if(product['createdAt'] == null){
+      return SizedBox();
+    }
     DateTime createdAt = product['createdAt'].toDate();
 
 // Define the date and time format
@@ -38,6 +41,10 @@ class ProductListTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
+                "${product['seller']}",
+                style: TextStyle(fontSize: 15.0, color: Colors.grey.shade600),
+              ),
+              Text(
                 "${product['name'].toString().toUpperCase()}",
                 style: TextStyle(fontSize: 20.0),
               ),
@@ -65,7 +72,9 @@ class ProductListTile extends StatelessWidget {
                   "${product['price']}",
                   style: TextStyle(fontSize: 20.0, color: Colors.blue.shade600),
                 ),
-                SizedBox(height: 10,),
+                SizedBox(
+                  height: 10,
+                ),
                 Text(
                   "$formattedDate\n$formattedTime",
                   style: TextStyle(fontSize: 15.0, color: Colors.grey.shade600),
