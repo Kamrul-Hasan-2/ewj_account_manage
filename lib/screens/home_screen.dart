@@ -13,15 +13,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int productCount = 0;
-  int totalSaleCount = 0;
-  int totalSaleAmount = 0;
+  int productCount = 1;
+
   List<Product> products = [];
 
   TextEditingController nameController = TextEditingController();
   TextEditingController priceController = TextEditingController();
 
   void addProduct() async {
+    FocusScope.of(context).unfocus();
     String name = nameController.text;
     int price = int.tryParse(priceController.text) ?? 0;
 
@@ -31,13 +31,15 @@ class _HomeScreenState extends State<HomeScreen> {
         'name': name,
         'price': price,
         'quantity': productCount,
+        'createdAt': FieldValue.serverTimestamp(),
       });
+
+      // firebase er total sale ta update koro
+
       setState(() {
         products.add(Product(name, price, productCount));
         nameController.clear();
         priceController.clear();
-        totalSaleCount += productCount;
-        totalSaleAmount += price;
         productCount = 1;
       });
     }
@@ -72,24 +74,45 @@ class _HomeScreenState extends State<HomeScreen> {
                 margin: const EdgeInsets.all(0.0),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Total Sale: $totalSaleCount",
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        "$totalSaleAmount.00৳",
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('sale_summary')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Text(
+                          "Loading",
+                          style: TextStyle(color: Colors.white),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData) {
+                        return Text('No data available');
+                      }
+
+                      final data = snapshot.data?.docs.first.data()
+                          as Map<String, dynamic>;
+                      // Use data to display the document information in your widget.
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Total Sale: ${data['count']}",
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            "${data['amount']}.00৳",
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),
@@ -157,8 +180,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Expanded(
                 child: StreamBuilder<QuerySnapshot>(
-              stream:
-                  FirebaseFirestore.instance.collection('products').snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection('products')
+                  .orderBy('createdAt', descending: true)
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return CircularProgressIndicator();
