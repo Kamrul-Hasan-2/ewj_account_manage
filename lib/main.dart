@@ -1,6 +1,7 @@
 import 'package:ewj_account_manage/firebase_options.dart';
 import 'package:ewj_account_manage/screens/firebase_test_screen.dart';
 import 'package:ewj_account_manage/screens/home_screen.dart';
+import 'package:ewj_account_manage/screens/name_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,7 +21,7 @@ class EasyWearJunctionApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.teal,
       ),
-      home: HomeScreen(),
+      home: NameScreen(),
     );
   }
 }
