@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ewj_account_manage/models/product_model.dart';
 import 'package:ewj_account_manage/screens/firebase_test_screen.dart';
+import 'package:ewj_account_manage/widgets/product_list_tile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -169,23 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (context, index) {
                     final product =
                         products[index].data() as Map<String, dynamic>;
-                    return Card(
-                        child: Column(
-                      children: [
-                        Text(
-                          "Name: ${product['name']}",
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                        Text(
-                          "Price: ${product['price']}",
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                        Text(
-                          "Quantity: ${product['quantity']}",
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ],
-                    ));
+                    return ProductListTile(product: product);
                   },
                 );
               },
