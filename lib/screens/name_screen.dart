@@ -33,7 +33,13 @@ class _NameScreenState extends State<NameScreen> {
     return Scaffold(
       body: Center(
 
-          child: isLoading ? CircularProgressIndicator() : Padding(
+          child: isLoading ? Column(
+            children: [
+              Image.asset("assets/easyWearLogo.jpg"),
+              SizedBox(height: 10,),
+              CircularProgressIndicator(),
+            ],
+          ) : Padding(
 
             padding: const EdgeInsets.all(8.0),
             child: Column(
