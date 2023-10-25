@@ -36,6 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // firebase er total sale ta update koro
 
+      updateServerSaleInfo(count: productCount, price: price);
+
       setState(() {
         products.add(Product(name, price, productCount));
         nameController.clear();
@@ -204,5 +206,46 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  void updateServerSaleInfo({required int count, required int price}) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    // Reference to the SalesSummary collection
+    CollectionReference salesSummaryCollection = firestore.collection('sale_summary');
+
+    // Fetch the first document in the collection
+    salesSummaryCollection
+        .limit(1)  // Limit the query to the first document
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        // Retrieve the first document
+        DocumentSnapshot document = querySnapshot.docs.first;
+
+        // Update the document with the new count and price values
+        int currentCount = document['count'] ?? 0;
+        int currentPrice = document['amount'] ?? 0;
+
+        // Calculate the updated values
+        int updatedCount = currentCount + count;
+        int updatedPrice = currentPrice + price;
+
+        // Update the document with the new values
+        document.reference.update({
+          'count': updatedCount,
+          'amount': updatedPrice,
+        }).then((_) {
+          print('Document updated successfully.');
+        }).catchError((error) {
+          print('Error updating document: $error');
+        });
+      } else {
+        // Handle the case when no documents are found in the collection
+        print('No documents found in SalesSummary collection.');
+      }
+    }).catchError((error) {
+      print('Error fetching document: $error');
+    });
   }
 }
