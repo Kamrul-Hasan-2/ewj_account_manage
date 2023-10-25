@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ProductListTile extends StatelessWidget {
   final Map<String, dynamic> product;
@@ -6,6 +7,16 @@ class ProductListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    // Assuming `product['createdAt']` is a DateTime object
+    DateTime createdAt = product['createdAt'].toDate();
+
+// Define the date and time format
+    final dateFormat = DateFormat('dd MMM yy');
+    final timeFormat = DateFormat('hh:mm a');
+
+    String formattedDate = dateFormat.format(createdAt);
+    String formattedTime = timeFormat.format(createdAt);
     return Card(
         child: Padding(
       padding: const EdgeInsets.all(8.0),
@@ -48,9 +59,18 @@ class ProductListTile extends StatelessWidget {
             ],
           )),
           Center(
-            child: Text(
-              "${product['price']}",
-              style: TextStyle(fontSize: 20.0, color: Colors.blue.shade600),
+            child: Column(
+              children: [
+                Text(
+                  "${product['price']}",
+                  style: TextStyle(fontSize: 20.0, color: Colors.blue.shade600),
+                ),
+                SizedBox(height: 10,),
+                Text(
+                  "$formattedDate\n$formattedTime",
+                  style: TextStyle(fontSize: 15.0, color: Colors.grey.shade600),
+                )
+              ],
             ),
           )
         ],
