@@ -59,17 +59,17 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('EWJ Account Manager'),
-        actions: [
-            IconButton(
-                onPressed: () {
-                  print("Tab");
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const NameScreen(isFirstTime: false,)));
-                },
-                icon: Icon(Icons.person))
-        ],
+        // actions: [
+        //     IconButton(
+        //         onPressed: () {
+        //           print("Tab");
+        //           Navigator.push(
+        //               context,
+        //               MaterialPageRoute(
+        //                   builder: (context) => const NameScreen(isFirstTime: false,)));
+        //         },
+        //         icon: Icon(Icons.person))
+        // ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

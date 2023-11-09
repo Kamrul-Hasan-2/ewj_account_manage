@@ -1,14 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import '../screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
   @override
-
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,9 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(
                   height: 190.0,
                   width: 250,
-
                   child: Image.asset("assets/easy.png"),
-
                 ),
                 SizedBox(
                   height: 20.0,
@@ -36,10 +39,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
+                    controller: emailController,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.email),
                       labelText: 'Email',
-
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -50,6 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
+                    controller: passwordController,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.lock),
                       labelText: 'Password',
@@ -57,11 +61,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     keyboardType: TextInputType.emailAddress,
                     inputFormatters: [
-                      FilteringTextInputFormatter.deny(RegExp('[ ]')), // Disallow spaces
+                      FilteringTextInputFormatter.deny(
+                          RegExp('[ ]')), // Disallow spaces
                     ],
                   ),
                 ),
-
                 SizedBox(
                   height: 60,
                 ),
@@ -76,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: _loginClick,
                     child: Text(
                       "Login", // login button
                       style: TextStyle(
@@ -90,5 +94,44 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ));
+  }
+
+  void _loginClick() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    CollectionReference usersCollection = firestore.collection('users');
+    print("user ${emailController.text}");
+    // Fetch the first document in the collection
+    // Perform a query to find the user with the specific email
+    usersCollection
+        .where('email', isEqualTo: emailController.text)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        // The user with the specified email exists
+        DocumentSnapshot userDoc = querySnapshot.docs.first;
+        print('User found: ${userDoc.data()}');
+        final user = userDoc.data() as Map<String, dynamic>;
+        final firebasePassword = user['password'];
+        if (firebasePassword == passwordController.text) {
+          Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) {
+                          return HomeScreen(name: user['name']);
+                        }));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Wrong Password")),
+          );
+        }
+      } else {
+        // The user with the specified email doesn't exist
+        print('User not found');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("User not found")),
+        );
+      }
+    }).catchError((error) {
+      print('Error searching for user: $error');
+    });
   }
 }
