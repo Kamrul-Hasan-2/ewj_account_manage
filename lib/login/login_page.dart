@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../screens/home_screen.dart';
 
@@ -13,6 +14,23 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async { 
+      SharedPreferences sp = await SharedPreferences.getInstance();
+      // final eml = sp.getString("eml");
+      // final pass  = sp.getString("password");
+      final name = sp.getString("name");
+      if(name != null && name.isNotEmpty){
+           Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) {
+                          return HomeScreen(name: name);
+                        }));
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,14 +124,17 @@ class _LoginScreenState extends State<LoginScreen> {
     usersCollection
         .where('email', isEqualTo: emailController.text)
         .get()
-        .then((QuerySnapshot querySnapshot) {
+        .then((QuerySnapshot querySnapshot) async{
       if (querySnapshot.docs.isNotEmpty) {
         // The user with the specified email exists
         DocumentSnapshot userDoc = querySnapshot.docs.first;
         print('User found: ${userDoc.data()}');
         final user = userDoc.data() as Map<String, dynamic>;
         final firebasePassword = user['password'];
+
         if (firebasePassword == passwordController.text) {
+          SharedPreferences sp = await SharedPreferences.getInstance();
+          sp.setString("name", user['name']);
           Navigator.of(context).pushReplacement(
                         MaterialPageRoute(builder: (context) {
                           return HomeScreen(name: user['name']);
