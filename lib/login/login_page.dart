@@ -37,6 +37,8 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Text("Login Page"),
+           backgroundColor: Colors.blue,
+       //   backgroundColor: Colors.black,
         ),
         body: SingleChildScrollView(
           child: Center(
