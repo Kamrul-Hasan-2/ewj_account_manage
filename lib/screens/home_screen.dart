@@ -1,11 +1,13 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ewj_account_manage/login/login_page.dart';
 import 'package:ewj_account_manage/models/product_model.dart';
 import 'package:ewj_account_manage/screens/firebase_test_screen.dart';
 import 'package:ewj_account_manage/widgets/product_list_tile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'name_screen.dart';
 
@@ -59,17 +61,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('EWJ Account Manager'),
-        // actions: [
-        //     IconButton(
-        //         onPressed: () {
-        //           print("Tab");
-        //           Navigator.push(
-        //               context,
-        //               MaterialPageRoute(
-        //                   builder: (context) => const NameScreen(isFirstTime: false,)));
-        //         },
-        //         icon: Icon(Icons.person))
-        // ],
+        actions: [
+            IconButton(
+                onPressed: () async{
+                  print("Tab");
+                   SharedPreferences sp = await SharedPreferences.getInstance();
+                  await sp.remove("name");
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen()));
+                },
+                icon: Icon(Icons.logout))
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
